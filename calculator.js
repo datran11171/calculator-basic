@@ -30,7 +30,26 @@ buttons.forEach((button) => {
         updateDisplay();
     });
 });
+// Add keyboard support
+document.addEventListener("keydown", (event) => {
+    const key = event.key;
 
+    if (!isNaN(key) || key === ".") {
+        // Number or Decimal Key Pressed
+        handleNumber(key);
+    } else if (key === "Escape") {
+        // Clear key pressed
+        clearCalculator();
+    } else if (key === "Enter" || key === "=") {
+        // Enter or Equals key pressed
+        calculateResult();
+    } else if (["+", "-", "*", "/"].includes(key)) {
+        // Operator key pressed
+        handleOperator(key);
+    }
+
+    updateDisplay();
+});
 // Handle number input
 function handleNumber(value) {
     if (value === "." && currentInput.includes(".")) return; // Prevent multiple decimals
