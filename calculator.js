@@ -23,8 +23,15 @@ function operate(operator, a, b) {
     }
 }
 
-const container = document.querySelector("#container");
+function updateDisplay() {
+    display.textContent = number1;
+}
 
+
+const container = document.querySelector("#container");
+const display = document.createElement("div");
+display.textContent = "0123456789";
+container.appendChild(display);
 for (let i = 1; i <= 9; i++) 
     if(i % 3 === 0) {
         const button = document.createElement("button");
@@ -51,6 +58,8 @@ container.appendChild(equalsButton);
 const clearButton = document.createElement("button");
 clearButton.textContent = "C";
 container.appendChild(clearButton);
+
+
 
 
 let number1 = 0;
