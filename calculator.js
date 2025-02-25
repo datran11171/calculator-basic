@@ -1,81 +1,94 @@
-let number1 = 0;
-let number2 = null;
-let operator = '';
+// Select display
+const display = document.querySelector(".display");
 
-// Ensure DOM is fully loaded before accessing elements
-document.addEventListener("DOMContentLoaded", () => {
-    const container = document.querySelector("#container");
+// Variables to store values
+let currentInput = "";
+let previousInput = "";
+let operator = null;
 
-    if (!container) {
-        console.error("Error: #container not found!");
-        return;
-    }
+// Select all buttons
+const buttons = document.querySelectorAll(".button");
 
-    const display = document.createElement("div");
-    display.textContent = "0";
-    display.classList.add("display");
-    container.appendChild(display);
+buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+        const value = button.textContent;
 
-    function updateDisplay(value) {
-        display.textContent = value;
-    }
-
-    function clickNumber(number) {
-        if (!operator) {
-            number1 = number1 * 10 + number;
-            updateDisplay(number1);
+        if (!isNaN(value) || value === ".") {
+            // Number or Decimal Clicked
+            handleNumber(value);
+        } else if (value === "C") {
+            // Clear button clicked
+            clearCalculator();
+        } else if (value === "=") {
+            // Equals button clicked
+            calculateResult();
         } else {
-            if (number2 === null) number2 = 0;
-            number2 = number2 * 10 + number;
-            updateDisplay(number2);
+            // Operator clicked
+            handleOperator(value);
         }
-    }
 
-    function operate(operator, a, b) {
-        switch (operator) {
-            case '+': return a + b;
-            case '-': return a - b;
-            case '*': return a * b;
-            case '/': return b !== 0 ? a / b : "Error";
-            default: return a;
-        }
-    }
-
-    function createButton(text, onClick) {
-        const button = document.createElement("button");
-        button.textContent = text;
-        button.addEventListener("click", onClick);
-        container.appendChild(button);
-    }
-
-    // Create number buttons (0-9)
-    for (let i = 1; i <= 9; i++) {
-        createButton(i, () => clickNumber(i));
-    }
-    createButton(0, () => clickNumber(0));
-
-    // Create operator buttons
-    ['+', '-', '*', '/'].forEach(op => {
-        createButton(op, () => {
-            if (number1 !== null) operator = op;
-        });
-    });
-
-    // Create Equals button
-    createButton("=", () => {
-        if (operator && number2 !== null) {
-            number1 = operate(operator, number1, number2);
-            number2 = null;
-            operator = "";
-            updateDisplay(number1);
-        }
-    });
-
-    // Create Clear button
-    createButton("C", () => {
-        number1 = 0;
-        number2 = null;
-        operator = "";
-        updateDisplay(0);
+        updateDisplay();
     });
 });
+
+// Handle number input
+function handleNumber(value) {
+    if (value === "." && currentInput.includes(".")) return; // Prevent multiple decimals
+    currentInput += value;
+}
+
+// Handle operator input
+function handleOperator(value) {
+    if (currentInput === "") return; // Prevent multiple operators
+    if (previousInput !== "") {
+        calculateResult(); // Compute existing equation first
+    }
+    operator = value;
+    previousInput = currentInput;
+    currentInput = "";
+}
+
+// Calculate result
+function calculateResult() {
+    if (previousInput === "" || currentInput === "") return; // Prevent calculation without two numbers
+
+    let result;
+    const num1 = parseFloat(previousInput);
+    const num2 = parseFloat(currentInput);
+
+    switch (operator) {
+        case "+":
+            result = num1 + num2;
+            break;
+        case "-":
+            result = num1 - num2;
+            break;
+        case "*":
+            result = num1 * num2;
+            break;
+        case "/":
+            result = num2 !== 0 ? num1 / num2 : "Error"; // Prevent division by zero
+            break;
+        default:
+            return;
+    }
+
+    currentInput = result.toString();
+    previousInput = "";
+    operator = null;
+}
+
+// Clear calculator
+function clearCalculator() {
+    currentInput = "";
+    previousInput = "";
+    operator = null;
+}
+
+// Update display
+function updateDisplay() {
+    display.textContent = currentInput || previousInput || "0";
+}
+
+// Initialize display
+updateDisplay();
